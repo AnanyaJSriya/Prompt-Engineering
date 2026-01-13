@@ -1,8 +1,6 @@
 import streamlit as st
 
-BOT_NAME = "Streambot"
-
-st.title(f"Chat with {Streambot}")
+BOT_NAME = "Curious"
 
 if "conversation_active" not in st.session_state:
     st.session_state.conversation_active = False
