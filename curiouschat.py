@@ -1,5 +1,5 @@
 import streamlit as st
-import speech_recognition as sr
+import st.audio_input() as sr
 import time
 import anthropic
 import os
