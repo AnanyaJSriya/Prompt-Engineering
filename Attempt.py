@@ -209,7 +209,7 @@ Provide specific examples from the conversation to support your feedback. Be con
 
 def create_pdf_manuscript(conversation_history, feedback):
     """Create a PDF manuscript of the conversation with feedback"""
-    pdf = FPDF2()
+    pdf = FPDF()
     pdf.add_page()
     
     # Set up fonts
