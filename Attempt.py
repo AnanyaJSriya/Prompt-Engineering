@@ -2,8 +2,6 @@ import streamlit as st
 from anthropic import Anthropic
 import json
 from datetime import datetime
-from fpdf2 import FPDF
-import base64
 import os
 from audio_recorder_streamlit import audio_recorder
 import speech_recognition as sr
@@ -91,7 +89,7 @@ with st.sidebar:
             <ol>
                 <li><strong>The microphone needs a right click to start, a left click to pause, and a double right click to stop.</strong></li>
                 <li><strong>Say "thank you" to end the conversation.</strong></li>
-                <li><strong>You will be provided with a downloadable manuscript of our conversation at the end.</strong></li>
+                <li><strong>You will receive detailed feedback on your teaching at the end.</strong></li>
             </ol>
         </div>
     """, unsafe_allow_html=True)
@@ -207,67 +205,6 @@ Provide specific examples from the conversation to support your feedback. Be con
     except Exception as e:
         return f"Unable to generate detailed feedback at this time. Error: {str(e)}"
 
-def create_pdf_manuscript(conversation_history, feedback):
-    """Create a PDF manuscript of the conversation with feedback"""
-    pdf = FPDF()
-    pdf.add_page()
-    
-    # Set up fonts
-    pdf.set_font("Arial", "B", 20)
-    pdf.set_text_color(0, 128, 128)  # Teal color
-    
-    # Title
-    pdf.cell(0, 10, "Curious - Your Learning Partner", ln=True, align="C")
-    pdf.ln(5)
-    
-    # Subtitle
-    pdf.set_font("Arial", "I", 14)
-    pdf.cell(0, 10, "Conversation Manuscript & Feedback", ln=True, align="C")
-    pdf.ln(10)
-    
-    # Date and time
-    pdf.set_font("Arial", "", 10)
-    pdf.set_text_color(0, 0, 0)
-    pdf.cell(0, 10, f"Date: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}", ln=True)
-    pdf.ln(5)
-    
-    # Conversation section
-    pdf.set_font("Arial", "B", 14)
-    pdf.set_text_color(0, 128, 128)
-    pdf.cell(0, 10, "Conversation Transcript", ln=True)
-    pdf.ln(5)
-    
-    pdf.set_font("Arial", "", 11)
-    pdf.set_text_color(0, 0, 0)
-    
-    for msg in conversation_history:
-        role = "Teacher (You)" if msg["role"] == "user" else "Curious (Student)"
-        pdf.set_font("Arial", "B", 11)
-        pdf.multi_cell(0, 6, f"{role}:")
-        pdf.set_font("Arial", "", 11)
-        
-        # Handle text encoding for PDF
-        content = msg["content"].encode('latin-1', 'replace').decode('latin-1')
-        pdf.multi_cell(0, 6, content)
-        pdf.ln(3)
-    
-    # Feedback section
-    pdf.add_page()
-    pdf.set_font("Arial", "B", 14)
-    pdf.set_text_color(0, 128, 128)
-    pdf.cell(0, 10, "Teaching Ability Feedback", ln=True)
-    pdf.ln(5)
-    
-    pdf.set_font("Arial", "", 11)
-    pdf.set_text_color(0, 0, 0)
-    
-    # Handle text encoding for feedback
-    feedback_encoded = feedback.encode('latin-1', 'replace').decode('latin-1')
-    pdf.multi_cell(0, 6, feedback_encoded)
-    
-    # Return PDF as bytes
-    return pdf.output(dest='S').encode('latin-1')
-
 def transcribe_audio(audio_bytes):
     """Transcribe audio to text using speech recognition"""
     try:
@@ -372,19 +309,7 @@ with col1:
         if st.session_state.teaching_analysis:
             st.markdown(st.session_state.teaching_analysis)
             
-            # Generate PDF
-            pdf_bytes = create_pdf_manuscript(
-                st.session_state.messages,
-                st.session_state.teaching_analysis
-            )
-            
-            # Download button
-            st.download_button(
-                label="📥 Download Conversation Manuscript (PDF)",
-                data=pdf_bytes,
-                file_name=f"curious_conversation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
-                mime="application/pdf"
-            )
+            st.info("💡 **Tip:** You can copy this feedback for your records using Ctrl+C / Cmd+C")
 
 with col2:
     st.markdown("### 📊 Session Info")
