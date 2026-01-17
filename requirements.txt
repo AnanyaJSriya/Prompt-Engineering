@@ -6,3 +6,5 @@ SpeechRecognition
 pydub==0.25.1
 speech_recognition
 PyAudio
+openai>=1.12.0
+python-dotenv>=1.0.0
